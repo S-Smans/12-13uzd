@@ -279,3 +279,152 @@ veikals.Izvadit();
 veikals.VeiklaTips();
 veikals.AtlasitArpusTemina();
 veikals.AtlasitBistamus();
+
+// 14
+using System;
+using System.IO;
+
+class StudijuKurss
+{
+    public string Nosaukums;
+    public int Kreditpunkti;
+    public bool IrObligats;
+
+    public double EKreditpunkti
+    {
+        get { return Kreditpunkti * 1.5; }
+    }
+
+    public void ReadData()
+    {
+        Console.Write("Ievadi kursa nosaukumu: ");
+        Nosaukums = Console.ReadLine();
+
+        Console.Write("Ievadi kredītpunktus (int): ");
+        Kreditpunkti = int.Parse(Console.ReadLine());
+
+        Console.Write("Vai kurss ir obligāts? (true/false): ");
+        IrObligats = bool.Parse(Console.ReadLine());
+    }
+
+    public void PrintData()
+    {
+        Console.WriteLine($"Nosaukums: {Nosaukums}; KP: {Kreditpunkti}; EKP: {EKreditpunkti}; Obligāts: {IrObligats}");
+    }
+}
+
+class Program
+{
+    static void FillArray(StudijuKurss[] kurss)
+    {
+        for (int i = 0; i < kurss.Length; i++)
+        {
+            kurss[i] = new StudijuKurss();
+            Console.WriteLine($"\nKursa {i + 1}:");
+            kurss[i].ReadData();
+        }
+    }
+
+    static void PrintArray(StudijuKurss[] kurss)
+    {
+        foreach (var k in kurss)
+        {
+            k.PrintData();
+        }
+    }
+
+    static void PrintArrayToFile(StudijuKurss[] kurss)
+    {
+        using (StreamWriter sw = new StreamWriter("kursi.txt"))
+        {
+            foreach (var k in kurss)
+            {
+                sw.WriteLine($"{k.Nosaukums};{k.Kreditpunkti};{k.EKreditpunkti};{k.IrObligats}");
+            }
+        }
+    }
+
+    static StudijuKurss[] ReadArrayFromFile()
+    {
+        string[] lines = File.ReadAllLines("kursi.txt");
+        StudijuKurss[] kursi = new StudijuKurss[lines.Length];
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string[] parts = lines[i].Split(';');
+            kursi[i] = new StudijuKurss
+            {
+                Nosaukums = parts[0],
+                Kreditpunkti = int.Parse(parts[1]),
+                IrObligats = bool.Parse(parts[3])
+            };
+        }
+
+        return kursi;
+    }
+
+    static void Main()
+    {
+        Console.Write("Cik kursus ievadīsi? ");
+        int n = int.Parse(Console.ReadLine());
+
+        StudijuKurss[] kursi1 = new StudijuKurss[n];
+        FillArray(kursi1);
+        PrintArrayToFile(kursi1);
+
+        StudijuKurss[] kursi2 = ReadArrayFromFile();
+        Console.WriteLine("\nNolasītie kursi no faila:");
+        PrintArray(kursi2);
+
+        // 2. Uzdevums – izņēmumi
+        Console.WriteLine("\n--- IZŅĒMUMU DEMONSTRĀCIJA ---");
+
+        try
+        {
+            int x = 10, y = 0;
+            Console.WriteLine(x / y);
+        }
+        catch (DivideByZeroException e)
+        {
+            Console.WriteLine($"Dalīšana ar 0: {e.GetType()} - {e.Message}");
+        }
+
+        try
+        {
+            int skaitlis = int.Parse("abc");
+        }
+        catch (FormatException e)
+        {
+            Console.WriteLine($"Nepareiza konvertēšana: {e.GetType()} - {e.Message}");
+        }
+
+        try
+        {
+            string saturs = File.ReadAllText("neeksistējošs_fails.txt");
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine($"Fails nav atrasts: {e.GetType()} - {e.Message}");
+        }
+
+        try
+        {
+            int[] masivs = new int[2];
+            Console.WriteLine(masivs[5]);
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            Console.WriteLine($"Masīva indekss ārpus robežām: {e.GetType()} - {e.Message}");
+        }
+
+        try
+        {
+            string teksts = "abc";
+            Console.WriteLine(teksts[10]);
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            Console.WriteLine($"Simbolrindas indekss ārpus robežām: {e.GetType()} - {e.Message}");
+        }
+    }
+}
