@@ -428,3 +428,128 @@ class Program
         }
     }
 }
+
+// binary
+using System;
+using System.IO;
+
+class BinaryReaderPiemers
+{
+    static void Main()
+    {
+        string fails = "dati.bin";
+
+        // Pierakstām dažus datus binārā veidā
+        using (BinaryWriter writer = new BinaryWriter(File.Open(fails, FileMode.Create)))
+        {
+            writer.Write("Sveiki");
+            writer.Write(123);
+            writer.Write(45.67);
+            writer.Write(true);
+        }
+
+        // Tagad nolasām datus, izmantojot BinaryReader
+        using (BinaryReader reader = new BinaryReader(File.Open(fails, FileMode.Open)))
+        {
+            string teksts = reader.ReadString();       // Nolasa simbolu virkni
+            int skaitlis = reader.ReadInt32();         // Nolasa int vērtību
+            double decSk = reader.ReadDouble();        // Nolasa double vērtību
+            bool logVert = reader.ReadBoolean();       // Nolasa boolean vērtību
+
+            Console.WriteLine($"Teksts: {teksts}");
+            Console.WriteLine($"Skaitlis: {skaitlis}");
+            Console.WriteLine($"Double: {decSk}");
+            Console.WriteLine($"Bool: {logVert}");
+        }
+    }
+}
+
+// binary writer
+using System;
+using System.IO;
+
+class BinaryWriterPiemers
+{
+    static void Main()
+    {
+        string fails = "dati.bin";
+
+        // Izveidojam BinaryWriter, lai ierakstītu datus binārā failā
+        using (BinaryWriter writer = new BinaryWriter(File.Open(fails, FileMode.Create)))
+        {
+            writer.Write("Studiju kurss");
+            writer.Write(6);         // Int
+            writer.Write(6 * 1.5);   // Double
+            writer.Write(true);      // Bool
+
+            writer.Flush();          // Attīra buferi (nav obligāti, ja lieto `using`)
+        }
+
+        Console.WriteLine("Dati ierakstīti binārā failā.");
+    }
+}
+// stream
+using System;
+using System.IO;
+
+class StreamReaderPiemers
+{
+    static void Main()
+    {
+        string fails = "teksts.txt";
+        File.WriteAllText(fails, "Rinda 1\nRinda 2\nRinda 3");
+
+        using (StreamReader reader = new StreamReader(fails))
+        {
+            Console.WriteLine("Current Encoding: " + reader.CurrentEncoding);
+
+            Console.WriteLine("Peek: " + (char)reader.Peek());
+
+            Console.WriteLine("Read: " + (char)reader.Read());
+
+            char[] buffer = new char[10];
+            int nolasits = reader.ReadBlock(buffer, 0, buffer.Length);
+            Console.WriteLine("ReadBlock: " + new string(buffer, 0, nolasits));
+
+            reader.DiscardBufferedData();
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            string rinda;
+            while ((rinda = reader.ReadLine()) != null)
+            {
+                Console.WriteLine("ReadLine: " + rinda);
+            }
+
+            reader.DiscardBufferedData();
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
+            string viss = reader.ReadToEnd();
+            Console.WriteLine("ReadToEnd: " + viss);
+        }
+    }
+}
+// stream
+using System;
+using System.IO;
+using System.Text;
+
+class StreamWriterPiemers
+{
+    static void Main()
+    {
+        string fails = "izvade.txt";
+
+        using (StreamWriter writer = new StreamWriter(fails, false, Encoding.UTF8))
+        {
+            writer.AutoFlush = true;
+            writer.NewLine = "\r\n";
+
+            writer.Write("Pirmais ieraksts. ");
+            writer.WriteLine("Šī ir rinda ar WriteLine.");
+            writer.WriteLine("Vēl viena rinda.");
+            writer.Flush();
+        }
+
+        Console.WriteLine("Dati ierakstīti failā.");
+    }
+}
+
